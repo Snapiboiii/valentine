@@ -2,72 +2,94 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Be My Valentine 💖</title>
 
 <style>
-  * {
-    box-sizing: border-box;
-    font-family: "Segoe UI", sans-serif;
-  }
+* {
+  box-sizing: border-box;
+  font-family: "Segoe UI", sans-serif;
+}
 
-  body {
-    margin: 0;
-    height: 100vh;
-    background: linear-gradient(135deg, #ffd1dc, #ffb6c1);
-    display: flex;
-    align-items: center;
-    justify-content: center;
-  }
+body {
+  margin: 0;
+  min-height: 100vh;
+  background: linear-gradient(135deg, #ffd1dc, #ffb6c1);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 20px;
+}
 
-  .container {
-    text-align: center;
-    max-width: 420px;
-    padding: 20px;
-  }
+.container {
+  text-align: center;
+  width: 100%;
+  max-width: 500px;
+}
 
+h1 {
+  color: #ff2e63;
+  font-size: 32px;
+  margin-bottom: 10px;
+}
+
+img {
+  width: 220px;
+  max-width: 90%;
+  transition: transform 0.4s ease;
+  margin: 15px 0;
+}
+
+p {
+  font-size: 20px;
+  color: #333;
+  line-height: 1.6;
+  margin-bottom: 30px;
+}
+
+.buttons {
+  display: flex;
+  flex-direction: column;
+  gap: 15px;
+}
+
+button {
+  padding: 18px;
+  border-radius: 40px;
+  border: none;
+  font-size: 20px;
+  font-weight: bold;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+#yesBtn {
+  background: #ff2e63;
+  color: white;
+  transform: scale(1);
+}
+
+#noBtn {
+  background: white;
+  color: #444;
+  transform: scale(1);
+}
+
+/* Mobile optimization */
+@media (max-width: 480px) {
   h1 {
-    color: #ff4d6d;
-    margin-bottom: 10px;
-  }
-
-  img {
-    width: 180px;
-    transition: transform 0.5s ease;
-    margin: 15px 0;
+    font-size: 34px;
   }
 
   p {
-    color: #444;
-    line-height: 1.5;
-    margin-bottom: 25px;
-    min-height: 60px;
-  }
-
-  .buttons {
-    display: flex;
-    flex-direction: column;
-    gap: 12px;
+    font-size: 22px;
   }
 
   button {
-    border-radius: 30px;
-    border: none;
-    font-size: 16px;
-    cursor: pointer;
-    transition: all 0.3s ease;
-    overflow: hidden;
+    font-size: 22px;
+    padding: 20px;
   }
-
-  #yesBtn {
-    background: #ff4d6d;
-    color: white;
-    height: 50px;
-  }
-
-  #noBtn {
-    background: #f0f0f0;
-    height: 50px;
-  }
+}
 </style>
 </head>
 
@@ -91,51 +113,55 @@
 </div>
 
 <script>
-  const yesBtn = document.getElementById("yesBtn");
-  const noBtn = document.getElementById("noBtn");
-  const gif = document.getElementById("gif");
-  const text = document.getElementById("text");
+const yesBtn = document.getElementById("yesBtn");
+const noBtn = document.getElementById("noBtn");
+const gif = document.getElementById("gif");
+const text = document.getElementById("text");
 
-  let yesHeight = 50;
-  let noHeight = 50;
-  let hesitationClicks = 0;
+let noClicks = 0;
+let yesScale = 1;
+let noScale = 1;
 
-  const messages = [
-    "Hmm… thinking already? 😏",
-    "Take your time… I’ll wait 💕",
-    "Still thinking? I’m getting hopeful 😌",
-    "Okay… now you’re just teasing 💖"
-  ];
+const messages = [
+  "Hmm… thinking? 😏",
+  "That’s 2… still not yes? 👀",
+  "3 times?? I’m getting nervous 💓",
+  "4 clicks… I’m waiting 🥺",
+  "5 already?! 😭",
+  "6 times… okay okay 😳",
+  "Last chance… choose wisely 💘"
+];
 
-  noBtn.addEventListener("click", () => {
-    hesitationClicks++;
+noBtn.addEventListener("click", () => {
+  noClicks++;
 
-    yesHeight += 14;
-    noHeight -= 14;
+  // Make YES grow
+  yesScale += 0.15;
+  yesBtn.style.transform = `scale(${yesScale})`;
 
-    if (noHeight <= 0) {
-      noHeight = 0;
-      noBtn.style.opacity = "0";
-      noBtn.style.pointerEvents = "none";
-    }
+  // Make NO shrink
+  noScale -= 0.12;
+  if (noScale < 0.2) noScale = 0.2;
+  noBtn.style.transform = `scale(${noScale})`;
 
-    yesBtn.style.height = yesHeight + "px";
-    noBtn.style.height = noHeight + "px";
+  // Change message
+  text.innerHTML = messages[Math.min(noClicks - 1, messages.length - 1)];
 
-    text.innerHTML = messages[Math.min(hesitationClicks - 1, messages.length - 1)];
-  });
+  // After 7 clicks remove NO button
+  if (noClicks >= 7) {
+    noBtn.style.display = "none";
+  }
+});
 
-  yesBtn.addEventListener("click", () => {
-    yesBtn.disabled = true;
-    noBtn.disabled = true;
+yesBtn.addEventListener("click", () => {
+  yesBtn.disabled = true;
+  noBtn.style.display = "none";
 
-    gif.src = "dance.gif";
-    gif.style.transform = "scale(1.7)";
+  gif.src = "dance.gif";
+  gif.style.transform = "scale(1.6)";
 
-    text.innerHTML = "YAY!! 💃🕺<br>You’re officially my Valentine ❤️";
-
-    noBtn.style.opacity = "0";
-  });
+  text.innerHTML = "YAYYY!!! 💃🕺<br>You’re officially my Valentine ❤️";
+});
 </script>
 
 </body>
